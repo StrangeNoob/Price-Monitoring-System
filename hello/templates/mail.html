@@ -1,0 +1,15 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+                    <!-- Custom styles for this template -->
+        <link href="{% static 'sign.css' %}" rel="stylesheet">
+    </head>
+    <body>
+        <h1> Mail Has been Sent </h1>
+        <a type="button" class="btn btn-link" href="{% url 'sign' %}">Go to Back</a>
+
+    </body>
+</html>

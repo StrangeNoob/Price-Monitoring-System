@@ -15,12 +15,12 @@ def sign(request):
             Price= float(Price)
             print(Price)
             check_price(Url,Email,Price)
+            return redirect('mail')
     else: 
         form = UrlForm()
     context = {'form':form}    
     return render(request, 'sign.html',context)
 def check_price(URL,Email,Price) :
-
         headers = {"User-Agent":'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'}
         pages = requests.get(URL, headers=headers)
         soup = BeautifulSoup(pages.content,'html.parser')
@@ -46,7 +46,10 @@ def check_price(URL,Email,Price) :
                 convertedprice = float(price)
                 if(convertedprice < Price):
                     send_mail(URL,title,Email)
-        return redirect('sign')
+                    print("Hey Email Has been Sent")
+                else:
+                    print('Item Price is too high')
+        
 
               
 
@@ -69,5 +72,8 @@ def send_mail(URL,Title,Email):
         Email,
         msg
     )
-    print("Hey Email Has been Sent")
+   
     server.quit()            
+    
+def mail(request):
+      return render(request,'mail.html')
