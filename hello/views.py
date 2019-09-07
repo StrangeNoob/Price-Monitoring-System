@@ -1,8 +1,10 @@
 from django.shortcuts import render,redirect
 from .forms import UrlForm
+from .models import URLCollection
 import requests
 from bs4 import BeautifulSoup
 import smtplib
+import time
 
 def sign(request):
     if request.method == 'POST':
@@ -14,17 +16,22 @@ def sign(request):
             Price=request.POST['Price']
             Price= float(Price)
             print(Price)
-            check_price(Url,Email,Price)
+            new_Url = URLCollection(URL=request.POST['Url'],email=request.POST['Email'],price=request.POST['Price'])
+            new_Url.save()
+            print("Object Created")
+            check_price()
             return redirect('mail')
     else: 
         form = UrlForm()
     context = {'form':form}    
     return render(request, 'sign.html',context)
-def check_price(URL,Email,Price) :
+def check_price() :
+    URLobject = URLCollection.objects.order_by('-date_added')
+    for url in URLobject:
         headers = {"User-Agent":'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'}
-        pages = requests.get(URL, headers=headers)
+        pages = requests.get(url.URL, headers=headers)
         soup = BeautifulSoup(pages.content,'html.parser')
-        if(URL.__contains__('amazon.com')):
+        if(url.URL.__contains__('amazon.com')):
                 title = soup.find(id='productTitle').get_text()
                 price = soup.find(id='priceblock_ourprice').get_text()
                 price = price.replace(',','')
@@ -32,8 +39,9 @@ def check_price(URL,Email,Price) :
                 print(title.strip())
                 print(price.strip())
                 convertedprice = float(price)
-                if(convertedprice < Price):
-                    send_mail(URL,title,Email)
+                if(convertedprice < url.price):
+                    send_mail(url.URl,title,url.price)
+                    url.sendMail = True
         else:
                 soup = BeautifulSoup(pages.content, 'html.parser')
                 price=''
@@ -44,9 +52,10 @@ def check_price(URL,Email,Price) :
                 price = price[1:]                           
                 print(price.strip())
                 convertedprice = float(price)
-                if(convertedprice < Price):
-                    send_mail(URL,title,Email)
+                if(convertedprice < url.price):
+                    send_mail(url.URl,title,url.price)
                     print("Hey Email Has been Sent")
+                    url.sendMail = True
                 else:
                     print('Item Price is too high')
         
@@ -77,3 +86,10 @@ def send_mail(URL,Title,Email):
     
 def mail(request):
       return render(request,'mail.html')
+#while (True):
+#   check_price()
+#   
+#     
+#
+#   time.sleep(3600)
+
