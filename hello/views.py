@@ -6,7 +6,10 @@ from bs4 import BeautifulSoup
 import smtplib
 import time
 
+
+
 def sign(request):
+    
     if request.method == 'POST':
         form = UrlForm(request.POST)
 
@@ -14,24 +17,25 @@ def sign(request):
             Url=request.POST['Url']
             Email=request.POST['Email']
             Price=request.POST['Price']
-            Price= float(Price)
-            print(Price)
+            Price=float(Price)
             new_Url = URLCollection(URL=request.POST['Url'],email=request.POST['Email'],price=request.POST['Price'])
             new_Url.save()
-            print("Object Created")
-            check_price()
+            print("Object Created")  
             return redirect('mail')
     else: 
         form = UrlForm()
     context = {'form':form}    
     return render(request, 'sign.html',context)
-def check_price() :
-    URLobject = URLCollection.objects.order_by('-date_added')
-    for url in URLobject:
+    every()
+def check_price(Id,URL,email,Price) :
         headers = {"User-Agent":'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'}
-        pages = requests.get(url.URL, headers=headers)
+        pages = requests.get(URL, headers=headers)
         soup = BeautifulSoup(pages.content,'html.parser')
-        if(url.URL.__contains__('amazon.com')):
+        print(Id)
+        print(URL)
+        print(email)
+        Price=float(Price)
+        if(URL.__contains__('amazon')):
                 title = soup.find(id='productTitle').get_text()
                 price = soup.find(id='priceblock_ourprice').get_text()
                 price = price.replace(',','')
@@ -39,9 +43,12 @@ def check_price() :
                 print(title.strip())
                 print(price.strip())
                 convertedprice = float(price)
-                if(convertedprice < url.price):
-                    send_mail(url.URl,title,url.price)
-                    url.sendMail = True
+                if(convertedprice < Price):
+                    send_mail(URL,title,email)
+                    return True
+                else:
+                    return False    
+                    
         else:
                 soup = BeautifulSoup(pages.content, 'html.parser')
                 price=''
@@ -52,16 +59,12 @@ def check_price() :
                 price = price[1:]                           
                 print(price.strip())
                 convertedprice = float(price)
-                if(convertedprice < url.price):
-                    send_mail(url.URl,title,url.price)
+                if(convertedprice < Price):
+                    send_mail(URL,title,email)
                     print("Hey Email Has been Sent")
-                    url.sendMail = True
+                    return True
                 else:
-                    print('Item Price is too high')
-        
-
-              
-
+                    return False                    
 def send_mail(URL,Title,Email):
     server = smtplib.SMTP('smtp.gmail.com',587)
     server.ehlo()
@@ -85,11 +88,20 @@ def send_mail(URL,Title,Email):
     server.quit()            
     
 def mail(request):
-      return render(request,'mail.html')
-#while (True):
-#   check_price()
-#   
-#     
-#
-#   time.sleep(3600)
-
+    return render(request,'mail.html')
+def remove_from():
+    URLCollection.objects.filter(sendMail=True).delete()    
+## To make this async !!!
+def every():
+    URLobject = URLCollection.objects.order_by('date_added')
+    for url in URLobject:
+        #print(url.id)
+        #print(url.email)
+        #print(url.URL)
+        #print(url.price)
+        url.sendMail=check_price(url.id,url.URL,url.email,url.price)
+        url.save()
+        print(url.sendMail)
+    remove_from()
+    time.sleep(60)
+    
