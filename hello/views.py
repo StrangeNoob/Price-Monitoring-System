@@ -5,7 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 import smtplib
 import time
-
+import importlib
 
 
 def sign(request):
@@ -21,12 +21,13 @@ def sign(request):
             new_Url = URLCollection(URL=request.POST['Url'],email=request.POST['Email'],price=request.POST['Price'])
             new_Url.save()
             print("Object Created")  
+            
             return redirect('mail')
     else: 
         form = UrlForm()
     context = {'form':form}    
     return render(request, 'sign.html',context)
-    every()
+
 def check_price(Id,URL,email,Price) :
         headers = {"User-Agent":'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'}
         pages = requests.get(URL, headers=headers)
@@ -88,7 +89,9 @@ def send_mail(URL,Title,Email):
     server.quit()            
     
 def mail(request):
+    every()
     return render(request,'mail.html')
+
 def remove_from():
     URLCollection.objects.filter(sendMail=True).delete()    
 ## To make this async !!!
@@ -103,5 +106,7 @@ def every():
         url.save()
         print(url.sendMail)
     remove_from()
-    time.sleep(60)
+# while(True):
+#     every()
+#     time.sleep(5)
     
