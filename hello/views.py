@@ -49,7 +49,20 @@ def check_price(Id,URL,email,Price) :
                     return True
                 else:
                     return False    
-                    
+        elif(URL.__contains__('shopicity')):
+                title = soup.find(id='productName').get_text()
+                price = soup.find(id='price').get_text()
+                price = price.replace(',','')
+                price = price[2:]
+                print(title.strip())
+                print(price.strip())
+                convertedprice = float(price)
+                if(convertedprice < Price):
+                    send_mail(URL,title,email)
+                    return True
+                else:
+                    return False
+
         else:
                 soup = BeautifulSoup(pages.content, 'html.parser')
                 price=''
@@ -76,6 +89,9 @@ def send_mail(URL,Title,Email):
     subject = 'Price went down for '+ Title +''
     if(URL.__contains__('amazon.com')):
         body = ' check the amazon link '+ URL
+    elif(URL.__contains__('shopicity')):
+        body=  ' check the shopicity link '+ URL
+
     else:
         body = ' check the flipkart link '+ URL       
     msg = f"Subject: {subject} \n\n {body}"
