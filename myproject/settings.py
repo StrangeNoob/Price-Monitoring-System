@@ -119,3 +119,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# celery
+CELERY_BROKER_URL = 'redis://h:p6936d077f4e61b8a0552e61e2121257f90ffecc35cc86f26579cc1ca0ad9f9df@ec2-3-215-116-159.compute-1.amazonaws.com:28049'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+
