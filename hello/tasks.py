@@ -1,8 +1,9 @@
-from hello.models import URLCollection
+from .models import URLCollection
 import requests
 from bs4 import BeautifulSoup
 import smtplib
 from celery import shared_task
+import time
 
 
 @shared_task
@@ -22,6 +23,7 @@ def every():
     
 def remove_from():
     URLCollection.objects.filter(sendMail=True).delete()    
+
 def check_price(Id,URL,email,Price) :
         headers = {"User-Agent":'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36'}
         pages = requests.get(URL, headers=headers)
@@ -38,13 +40,13 @@ def check_price(Id,URL,email,Price) :
                 print(title.strip())
                 print(price.strip())
                 convertedprice = float(price)
-                if(convertedprice > Price):
+                if(convertedprice < Price):
                     send_mail(URL,title,email)
                     return True
                 else:
                     return False    
-                    
-        else:
+       
+        elif(URL.__contains__('flipkart')):
                 soup = BeautifulSoup(pages.content, 'html.parser')
                 price=''
                 title=''
@@ -54,12 +56,25 @@ def check_price(Id,URL,email,Price) :
                 price = price[1:]                           
                 print(price.strip())
                 convertedprice = float(price)
-                if(convertedprice > Price):
+                if(convertedprice < Price):
                     send_mail(URL,title,email)
                     print("Hey Email Has been Sent")
                     return True
                 else:
                     return False   
+        else:
+                title = soup.find(id='productName').get_text()
+                price = soup.find(id='price').get_text()
+                price = price.replace(',','')
+                price = price[1:]
+                print(title.strip())
+                print(price.strip())
+                convertedprice = float(price)
+                if(convertedprice < Price):
+                    send_mail(URL,title,email)
+                    return True
+                else:
+                    return False    
 
 def send_mail(URL,Title,Email):
     server = smtplib.SMTP('smtp.gmail.com',587)
@@ -82,6 +97,4 @@ def send_mail(URL,Title,Email):
     )
     server.quit()            
 
-def remove_from():
-    URLCollection.objects.filter(sendMail=False).delete() 
-every()   
+#every()   
