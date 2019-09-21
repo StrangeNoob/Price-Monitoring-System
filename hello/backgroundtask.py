@@ -3,8 +3,6 @@ import requests
 from bs4 import BeautifulSoup
 import smtplib
 import time
-import importlib
-import schedule
 from django.utils import timezone
 
 def remove_from():
@@ -98,10 +96,4 @@ def send_mail(URL,Title,Email):
         Email,
         msg
     )
-   
     server.quit() 
-# schedule.every(10).seconds.do(every()) 
-
-# while True:
-#     schedule.run_pending()
-    
