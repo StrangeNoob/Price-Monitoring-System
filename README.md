@@ -12,6 +12,6 @@
     -> open your favourite Browser and go to ```http://127.0.0.1:8000/hello/```
 2. open a second terminal
 3. Run ```python manage.py shell``` 
-   -> ```from hello.backroundgroundtask import every```
+   -> ```from hello.backgroundtask import every```
    -> ```every()```
 4. Happy Coding
