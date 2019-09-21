@@ -1,9 +1,17 @@
 # python-scraps
-  Just a demo version 
+  This is webscraping tools that checks the prices of amazon and flipkart products
+   and send mail if they are in your budget.
 
-## Install Instruction
+## Requirements 
 
 1. install python and pip 
-2. install django and requests
-3. open terminal and type ```  python manage.py runserver ```
-4. Go to ``` http://127.0.0.1:8000/hello/ ``` in your browser
+2. install requirements.txt 
+
+## Working 
+1. First run server
+    -> open your favourite Browser and go to ```http://127.0.0.1:8000/hello/```
+2. open a second terminal
+3. Run ```python manage.py shell``` 
+   -> ```from hello.backroundgroundtask import every```
+   -> ```every()```
+4. Happy Coding
