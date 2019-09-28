@@ -39,7 +39,7 @@ def check_price(Id,URL,email,Price) :
                 print(title.strip())
                 print(price.strip())
                 convertedprice = float(price)
-                if(convertedprice < Price):
+                if(convertedprice <= Price):
                     send_mail(URL,title,email)
                     return True
                 else:
@@ -48,16 +48,15 @@ def check_price(Id,URL,email,Price) :
                 title = soup.find(id='productName').get_text()
                 price = soup.find(id='price').get_text()
                 price = price.replace(',','')
-                #price = price[2:]
+                price = price[3:]
                 print(title.strip())
                 print(price.strip())
                 convertedprice = float(price)
-                if(convertedprice < Price):
+                if(convertedprice <= Price):
                     send_mail(URL,title,email)
                     return True
                 else:
                     return False
-
         else:
                 soup = BeautifulSoup(pages.content, 'html.parser')
                 price=''
@@ -68,7 +67,7 @@ def check_price(Id,URL,email,Price) :
                 price = price[1:]                           
                 print(price.strip())
                 convertedprice = float(price)
-                if(convertedprice < Price):
+                if(convertedprice <= Price):
                     send_mail(URL,title,email)
                     print("Hey Email Has been Sent")
                     return True
