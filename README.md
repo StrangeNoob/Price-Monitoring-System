@@ -1,4 +1,5 @@
-# python-scraps
+# Price Monitoring System
+
   This is webscraping tools that checks the prices of amazon and flipkart products
    and send mail if they are in your budget.
 
